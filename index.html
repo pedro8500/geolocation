@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Geolocation</title>
+  <style>
+    .center {
+      display: flex;
+      justify-content: center;
+    }
+    .button-row {
+      margin-top: 20%;
+    }
+    .output-row {
+      margin-top: 1%;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <div class="center button-row">
+    <button id="locate" type="button">Get location</button>
+  </div>
+  <div class="center output-row">
+    <p id="output" role="status" aria-live="polite"></p>
+  </div>
+
+  <script>
+    const button = document.getElementById("locate");
+    const output = document.getElementById("output");
+
+    button.addEventListener("click", getLocation);
+
+    function getLocation() {
+      if (!navigator.geolocation) {
+        output.textContent = "Geolocation is not supported by this browser.";
+        return;
+      }
+
+      button.disabled = true;
+      output.textContent = "Locating\u2026";
+
+      navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      });
+    }
+
+    function onSuccess(position) {
+      const { latitude, longitude } = position.coords;
+      output.textContent =
+        `Latitude: ${latitude.toFixed(6)}\nLongitude: ${longitude.toFixed(6)}`;
+      button.disabled = false;
+    }
+
+    function onError(err) {
+      const messages = {
+        1: "Permission denied. Please allow location access.",
+        2: "Position unavailable. Try again.",
+        3: "Request timed out. Try again.",
+      };
+      output.textContent = messages[err.code] || "Unable to retrieve location.";
+      button.disabled = false;
+    }
+  </script>
+</body>
+</html>
